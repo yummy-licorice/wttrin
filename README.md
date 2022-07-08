@@ -22,7 +22,7 @@ import wttrin
 
 echo getCondition
 ```
-#### getUnit
+#### getUnit()
 The final function, 'getUnit()', can be used to get the current unit of weather
 ```nim
 import wttrin
