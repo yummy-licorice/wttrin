@@ -3,27 +3,24 @@ import strutils,
        httpclient,
        json
 
-proc getTemp*(httpclient: HttpClient, city: string = ""): int =
+type
+  Unit* = enum
+    Farenheight = "F"
+    Celcius = "C"
+
+proc getTemprature*(httpclient: HttpClient, city: string = "", unit: Unit = Unit.Farenheight): int =
   ## Get the temprature of the city provided
   ## If no city is provided, detect the city based on current location
   var client = httpclient
   var weatherJson = parseJson getContent(client, fmt"https://wttr.in/{city}?format=j1")
-  return weatherJson["current_condition"][0]["temp_F"].getStr().parseInt()
+  return weatherJson["current_condition"][0][fmt"temp_{unit}"].getStr().parseInt()
 
-## Get the weather condition as an emoji
-proc getCondition*(city: string = ""): string =
-  var client = newHttpClient()
-  var weather = $getContent(client ,fmt"https://wttr.in/{city}?format=1")
-  return weather.split("+")[0].strip()
+proc getFeelsLike*(httpclient: HttpClient, city: string = "", unit: Unit = Unit.Farenheight): int =
+  ## Get the feels like temprature of the city provided
+  ## If no city is provided, detect the city based on current location
+  var client = httpclient
+  var weatherJson = parseJson getContent(client, fmt"https://wttr.in/{city}?format=j1")
+  return weatherJson["current_condition"][0][fmt"FeelsLike{unit}"].getStr().parseInt()
 
-## Get the unit of the weather
-## Either "C" or "F" for celcius or fahrenheit
-proc getUnit*(city: string = ""): char =
-  var client = newHttpClient()
-  var weather = $getContent(client ,fmt"https://wttr.in/{city}?format=1")
-  if "F" in weather:
-    return 'F'
-  else:
-    return 'C'
 
 
