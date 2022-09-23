@@ -1,13 +1,14 @@
 import strutils,
        strformat,
-       httpclient
+       httpclient,
+       json
 
-## Return the temprature of the given city, 
-## if no city is given, return the weather for the current location
-proc getTemp*(city: string = ""): int =
-  var client = newHttpClient()
-  var weather = $getContent(client ,fmt"https://wttr.in/{city}?format=1")
-  return weather.split("+")[1].strip().split("°")[0].strip().parseInt()
+proc getTemp*(httpclient: HttpClient, city: string = ""): int =
+  ## Get the temprature of the city provided
+  ## If no city is provided, detect the city based on current location
+  var client = httpclient
+  var weatherJson = parseJson getContent(client, fmt"https://wttr.in/{city}?format=j1")
+  return weatherJson["current_condition"][0]["temp_F"].getStr().parseInt()
 
 ## Get the weather condition as an emoji
 proc getCondition*(city: string = ""): string =
